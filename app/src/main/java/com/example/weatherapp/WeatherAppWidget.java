@@ -4,6 +4,8 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.widget.RemoteViews;
 import android.widget.TextView;
@@ -14,6 +16,7 @@ import com.example.weatherapp.models.CurrentWeatherInfo;
 import com.example.weatherapp.models.WeatherDescription;
 import com.example.weatherapp.screens.MainActivity;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -37,10 +40,24 @@ public class WeatherAppWidget extends AppWidgetProvider {
                         String ok = String.valueOf(currentWeatherInfo.getTempInfo().getTemp());
 
                         WeatherDescription currentWeatherDescription = currentWeatherInfo.getWeatherDescriptions().get(0);
-                        String weatherDescription = currentWeatherDescription.getDescription();
 
                         String iconUrl = "http://openweathermap.org/img/w/" + currentWeatherDescription.getIcon() + ".png";
-                      //  Picasso.with(context).load(iconUrl).into(views.setBitmap());
+                        Picasso.with(context).load(iconUrl).into(new Target() {
+                            @Override
+                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                views.setImageViewBitmap(R.id.current_condition_widget, bitmap);
+                            }
+
+                            @Override
+                            public void onBitmapFailed(Drawable errorDrawable) {
+
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                            }
+                        });
 
                         views.setTextViewText(R.id.current_temperature_widget, ok);
                         appWidgetManager.updateAppWidget(appWidgetId, views);
